@@ -21,6 +21,7 @@ from redmine import Redmine
 
 import json
 import os
+import sys
 
 # set the redmine url here
 REDMINE_URL="https://example.com/redmine"
@@ -29,14 +30,15 @@ REDMINE_URL="https://example.com/redmine"
 JENKINS_ACCESS="jenkins_users"
 
 if __name__=="__main__":
-  if 'REDMINE_URL' in os.environ:
-    REDMINE_URL=os.environ['REDMINE_URL']
+  if len(sys.argv) >= 2:
+    REDMINE_URL=sys.argv[1]
 
   username = os.environ['U']
   password = os.environ['P']
-
-  instance = Redmine(REDMINE_URL, username=username, password=password)
   
+  print("Authenticating... %s@%s" % (username, REDMINE_URL))
+  instance = Redmine(REDMINE_URL, username=username, password=password)
+   
   # This will fail if the authentication failed
   details = json.loads(instance.get("users/current.json?include=groups"))
   
@@ -46,4 +48,5 @@ if __name__=="__main__":
       print("Authorization successful")
       exit(0)
 
+  print("Authorization failed")
   exit(1)
